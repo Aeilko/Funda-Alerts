@@ -5,14 +5,19 @@ import sys
 
 from funda_scraper import FundaScraper
 
+# Use absolute paths so it works in CRONs
+base = os.path.dirname(__file__)
+SETTINGS_FILE = os.path.join(base, 'settings.json')
+DATA_FILE = os.path.join(base, 'data.json')
+
 def setup():
-    if not os.path.exists('settings.json'):
+    if not os.path.exists(SETTINGS_FILE):
         sys.exit("No settings file")
 
-    if not os.path.exists('data.json'):
+    if not os.path.exists(DATA_FILE):
         json.dump({
             "last_id": 0
-        }, open('data.json', 'w'))
+        }, open(DATA_FILE, 'w'))
 
 def get_id(u):
     parts = u.split("/")
@@ -21,8 +26,8 @@ def get_id(u):
 if __name__ == "__main__":
     setup()
 
-    config = json.load(open('settings.json'))
-    data = json.load(open('data.json'))
+    config = json.load(open(SETTINGS_FILE))
+    data = json.load(open(DATA_FILE))
 
     area = config['funda']['area']
     if type(area) is list:
@@ -64,4 +69,4 @@ if __name__ == "__main__":
 
         # Update state
         data["last_id"] = new[0][0]
-        json.dump(data, open('data.json', 'w'))
+        json.dump(data, open(DATA_FILE, 'w'))
