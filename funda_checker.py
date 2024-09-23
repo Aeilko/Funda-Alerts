@@ -1,5 +1,7 @@
 import json
 import os
+from datetime import datetime
+
 import requests
 import sys
 
@@ -65,6 +67,7 @@ if __name__ == "__main__":
         # Send notification
         url = f"https://api.telegram.org/bot{config['telegram']['api_token']}/sendMessage"
         params = {"chat_id": config["telegram"]["chat_id"], "text": msg}
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Sending Telegram message: '{msg}'")
         r = requests.get(url, params=params)
 
         # Update state

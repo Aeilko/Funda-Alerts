@@ -7,3 +7,6 @@
 
 # JetBrains
 .idea/
+
+# Logging
+*.log
