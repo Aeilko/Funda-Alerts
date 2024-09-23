@@ -1,0 +1,9 @@
+# Project
+/settings.json
+/data.json
+
+# Python
+/.venv/
+
+# JetBrains
+.idea/

@@ -1,0 +1,14 @@
+{
+  "funda":{
+    "type": "buy",
+    "area": [
+      "amsterdam"
+    ],
+    "max_price": 1000000,
+    "property_type": "house"
+  },
+  "telegram": {
+    "api_token": "123:xyz",
+    "chat_id": ":123"
+  }
+}
