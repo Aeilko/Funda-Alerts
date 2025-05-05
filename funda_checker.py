@@ -23,7 +23,7 @@ def setup():
 
 def get_id(u):
     parts = u.split("/")
-    return int(parts[-2].split("-")[1])
+    return int(parts[-2].split("-")[-1])
 
 if __name__ == "__main__":
     setup()
@@ -50,26 +50,30 @@ if __name__ == "__main__":
     # Workaround to extract IDs from the URLs, and just use these to find if there are any new listings
     # IDs are NOT chronological, so we cant just sort by that, we have to find the row of the previous ID
     df = scraper.run(raw_data=True)
-    df['id'] = df.apply(lambda x: get_id(x["url"]), axis=1)
-    new = []
-    for index, row in df.iterrows():
-        if row["id"] == data["last_id"]:
-            break
-        new.append((row["id"], row["url"]))
 
-    if len(new) > 0:
-        msg = ""
-        if len(new) == 1:
-            msg = f"Nieuw huis op Funda: {new[0][1]}"
-        else:
-            msg = f"{len(new)} nieuwe huizen op Funda, nieuwste: {new[0][1]}"
+    if len(df.index) == 0:
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - No results found")
+    else:
+        df['id'] = df.apply(lambda x: get_id(x["url"]), axis=1)
+        new = []
+        for index, row in df.iterrows():
+            if row["id"] == data["last_id"]:
+                break
+            new.append((row["id"], row["url"]))
 
-        # Send notification
-        url = f"https://api.telegram.org/bot{config['telegram']['api_token']}/sendMessage"
-        params = {"chat_id": config["telegram"]["chat_id"], "text": msg}
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Sending Telegram message: '{msg}'")
-        r = requests.get(url, params=params)
+        if len(new) > 0:
+            msg = ""
+            if len(new) == 1:
+                msg = f"Nieuw huis op Funda: {new[0][1]}"
+            else:
+                msg = f"{len(new)} nieuwe huizen op Funda, nieuwste: {new[0][1]}"
 
-        # Update state
-        data["last_id"] = new[0][0]
-        json.dump(data, open(DATA_FILE, 'w'))
+            # Send notification
+            url = f"https://api.telegram.org/bot{config['telegram']['api_token']}/sendMessage"
+            params = {"chat_id": config["telegram"]["chat_id"], "text": msg}
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Sending Telegram message: '{msg}'")
+            r = requests.get(url, params=params)
+
+            # Update state
+            data["last_id"] = new[0][0]
+            json.dump(data, open(DATA_FILE, 'w'))
